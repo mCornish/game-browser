@@ -61,24 +61,77 @@ const games = [{
 ];
 
 export default async function() {
-  return await Promise.all(games.map(fetchData));
+  try {
+    const token = (await fetchAuthToken()).access_token;
+    return await Promise.all(games.map(fetchData(token)));
+  } catch(err) { 
+    throw err;
+  }
 }
 
 // Note: Not using async/await since fetch does not support it
-function fetchData(game, index) {
-  return fetch(`https://api.rawg.io/api/games?search=${game.title}`)
-    .then((res) => res.json())
-    .then(({ results = [] } = {}) => {
-      if (!results.length) return game;
+function fetchData(token) {
+  return async (game, index) => {
+    const resultsResponse = await fetch(`https://api.rawg.io/api/games?search=${game.title}`);
+    const { results } = await resultsResponse.json();
 
-      const result = results[0];
-      
-      return {
-        ...game,
-        id: result.id,
-        thumbnail: result.preview,
-        backgroundImage: result.background_image,
-        score: result.metacritic
-      }
-    });
+    if (!results.length) return game;
+
+    const result = results[0];
+    const url = `https://rawg.io/games/${result.slug}`;
+
+    // Fetch twitch streams
+    const twitchGames = await fetchTwitchGames(token, game.title);
+    const twitchGame = twitchGames[0];
+    const streams = twitchGame ? await fetchTwitchStreams(token, twitchGame.id) : [];
+
+    return {
+      ...game,
+      id: result.id,
+      thumbnail: result.preview,
+      backgroundImage: result.background_image,
+      score: result.metacritic,
+      streams: streams.splice(0, 5),
+      url
+    };
+  }
+}
+
+async function fetchAuthToken() {
+  // FIXME: Move app secret to .env
+  const formData = new FormData();
+  formData.append('client_id', 'unobk7nvhs2fuz7myai6p486giv2tu');
+  formData.append('client_secret', 't7dww4k3r9h6yc3ogu2h84u6qof9y7');
+  formData.append('grant_type', 'client_credentials');
+
+  const res = await fetch('https://id.twitch.tv/oauth2/token', {
+    method: 'POST',
+    body: formData
+  });
+  
+  return res.json();
+}
+
+async function fetchTwitchGames(token, name) {
+  const res = await fetch(`https://api.twitch.tv/helix/search/categories?query=${name}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Client-ID': 'unobk7nvhs2fuz7myai6p486giv2tu'
+    }
+  });
+
+  const { data } = await res.json();
+  return data;
+}
+
+async function fetchTwitchStreams(token, gameId) {
+  const res = await fetch(`https://api.twitch.tv/helix/streams?game_id=${gameId}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Client-ID': 'unobk7nvhs2fuz7myai6p486giv2tu'
+    }
+  });
+
+  const { data } = await res.json();
+  return data;
 }

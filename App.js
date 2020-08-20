@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, TextInput, TouchableHighlight, View } from 'react-native';
+import { ActivityIndicator, Image, StyleSheet, Text, TextInput, TouchableHighlight, View } from 'react-native';
+import QRCode from 'react-native-qrcode-svg';
 import searchFor from './lib/searchFor';
 import fetchGames from './assets/gameLibrary';
 
@@ -23,7 +24,7 @@ function GameBrowser() {
         setGames(initialGames);
         setIsLoading(false);
       } catch (err) {
-        throw err;
+        console.error(err);
       }
     })();
   }, []);
@@ -88,7 +89,23 @@ function GameResult({ game, onSelect }) {
 
 function GamePage({ game }) {
   return (
-    <Text>{game.title}</Text>
+    <View>
+      <Text>{game.title}</Text>
+      <QRCode value={game.url} />
+
+      <Text>Watch on Twitch</Text>
+      {game.streams.map(stream => (
+        <GameStream key={stream.id} stream={stream} />
+      ))}
+    </View>
+  )
+}
+
+function GameStream({ stream }) {
+  return (
+    <View>
+      <Text>{stream.title}</Text>
+    </View>
   )
 }
 
