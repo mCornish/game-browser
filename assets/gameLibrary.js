@@ -1,9 +1,4 @@
-const games = [{
-    title: "Fall Guys",
-    releaseDate: "8/4/20",
-    genre: "Battle Royale",
-    platforms: ['Playstation 4', 'PC']
-  },
+const games = [
   {
     title: "Call of Duty: Warzone",
     releaseDate: "3/10/20",
@@ -53,6 +48,12 @@ const games = [{
     platforms: ['Nintendo Switch']
   },
   {
+    title: "Fall Guys",
+    releaseDate: "8/4/20",
+    genre: "Battle Royale",
+    platforms: ['Playstation 4', 'PC']
+  },
+  {
     title: "Forza Horizon 4",
     releaseDate: "10/2/18",
     genre: "Racing",
@@ -88,10 +89,10 @@ function fetchData(token) {
     return {
       ...game,
       id: result.id,
-      thumbnail: result.preview,
+      thumbnail: twitchGame.box_art_url,
       backgroundImage: result.background_image,
       score: result.metacritic,
-      streams: streams.splice(0, 5),
+      streams,
       url
     };
   }
@@ -99,6 +100,7 @@ function fetchData(token) {
 
 async function fetchAuthToken() {
   // FIXME: Move app secret to .env
+  // https://www.npmjs.com/package/react-native-dotenv
   const formData = new FormData();
   formData.append('client_id', 'unobk7nvhs2fuz7myai6p486giv2tu');
   formData.append('client_secret', 't7dww4k3r9h6yc3ogu2h84u6qof9y7');
@@ -113,7 +115,7 @@ async function fetchAuthToken() {
 }
 
 async function fetchTwitchGames(token, name) {
-  const res = await fetch(`https://api.twitch.tv/helix/search/categories?query=${name}`, {
+  const res = await fetch(`https://api.twitch.tv/helix/games?name=${name}`, {
     headers: {
       'Authorization': `Bearer ${token}`,
       'Client-ID': 'unobk7nvhs2fuz7myai6p486giv2tu'
@@ -125,7 +127,7 @@ async function fetchTwitchGames(token, name) {
 }
 
 async function fetchTwitchStreams(token, gameId) {
-  const res = await fetch(`https://api.twitch.tv/helix/streams?game_id=${gameId}`, {
+  const res = await fetch(`https://api.twitch.tv/helix/streams?game_id=${gameId}&first=6`, {
     headers: {
       'Authorization': `Bearer ${token}`,
       'Client-ID': 'unobk7nvhs2fuz7myai6p486giv2tu'
