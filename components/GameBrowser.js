@@ -1,26 +1,25 @@
 import React, { useEffect, useRef, useState } from 'react';
+import PropTypes from 'prop-types';
 import { ActivityIndicator, BackHandler, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 
 import colors from '../lib/colors';
 import searchFor from '../lib/searchFor';
-import fetchGames from '../assets/gameLibrary';
+import fetchGameData from '../lib/fetchGameData';
 
 import GameSearch from './GameSearch';
 import GamePage from './GamePage';
 
-export default function GameBrowser() {
-  const initialGames = useRef();
+export default function GameBrowser({ games: initialGames = [] }) {
   const [games, setGames] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [openedGame, setOpenedGame] = useState(null);
 
-  const searchGames = searchFor(initialGames.current);
+  const searchGames = searchFor(initialGames, 'title');
 
   useEffect(() => {
     (async () => {
       try {
-        const fetchedGames = await fetchGames();
-        initialGames.current = fetchedGames;
+        const fetchedGames = await fetchGameData(initialGames);
         setGames(fetchedGames);
         setIsLoading(false);
       } catch (err) {
@@ -96,6 +95,10 @@ export default function GameBrowser() {
   );
 
   function filterGames(searchTerm) {
-    setGames(searchGames(searchTerm, 'title'));
+    setGames(searchGames(searchTerm));
   }
 }
+
+GameBrowser.propTypes = {
+  games: PropTypes.arrayOf(PropTypes.object)
+};

@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import colors from './lib/colors';
+import games from './assets/gameLibrary';
 
 import GameBrowser from './components/GameBrowser';
 
@@ -8,7 +9,7 @@ import GameBrowser from './components/GameBrowser';
 export default function App() {
   return (
     <View style={styles.container}>
-      <GameBrowser />
+      <GameBrowser games={games} />
     </View>
   );
 }

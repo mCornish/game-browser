@@ -1,9 +1,11 @@
-import React from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { useRef } from 'react';
+import { StyleSheet, Text, TextInput, TouchableHighlight, View } from 'react-native';
 import colors from '../lib/colors';
 import GameResult from './GameResult';
 
 export default function GameSearch({ games, onSelectGame, onSearch }) {
+  const inputRef = useRef();
+
   return (
     <View>
       <View
@@ -12,14 +14,17 @@ export default function GameSearch({ games, onSelectGame, onSearch }) {
           alignItems: 'flex-start',
         }}
       >
-        <Text 
-          style={{ 
-            color: colors.text,
-            fontWeight: 'bold',
-            fontSize: 20
-          }}
-        >Search: </Text>
+        <TouchableHighlight onPress={() => inputRef.current.focus()}>
+          <Text 
+            style={{ 
+              color: colors.text,
+              fontWeight: 'bold',
+              fontSize: 20
+            }}
+          >Search: </Text>
+        </TouchableHighlight>
         <TextInput
+          ref={inputRef}
           onChangeText={text => onSearch(text)}
           placeholder="Fall Guys"
           placeholderTextColor={colors.placeholder}
