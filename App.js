@@ -182,7 +182,9 @@ function GameResult({ game, onSelect }) {
 
 function GamePage({ game }) {
   return (
-    <View style={{ marginTop: 80 }}>
+    <View style={{ 
+      marginTop: 80, 
+    }}>
       <Image 
         source={{ uri: game.backgroundImage }} 
         style={{ 
@@ -196,22 +198,40 @@ function GamePage({ game }) {
       />
     
     <ScrollView style={{
-      padding: 30
+      padding: 30,
+      marginVertical: 30,
     }}>
-      <Text style={{ color: colors.text }}>{game.title}</Text>
-      <Text style={{ color: colors.text }}>Metacritic Score: {game.score}</Text>
-      <QRCode value={game.url} />
+      <View style={{ marginBottom: 50 }}>
+        <Text style={{ 
+          color: colors.text,
+          fontSize: 30,
+          fontWeight: 'bold'
+        }}>{game.title}</Text>
+        <Text style={{ color: colors.text }}>Metacritic Score: {game.score}</Text>
 
-      <Text style={{ color: colors.text }}>Watch on Twitch</Text>
-      <View
-        style={{
-          flexDirection: 'row',
-          flexWrap: 'wrap'
-        }}
-      >
-        {game.streams.map(stream => (
-          <GameStream key={stream.id} {...stream} />
-        ))}
+        <View style={{ marginVertical: 50 }}>
+          <Text style={{ 
+            color: colors.text ,
+            fontSize: 20,
+            fontWeight: 'bold'
+          }}>Watch on Twitch</Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              justifyContent: 'space-between',
+            }}
+          >
+            {game.streams.map(stream => (
+              <GameStream key={stream.id} {...stream} />
+            ))}
+          </View>
+        </View>
+
+        <View>
+          <Text style={{ color: colors.text }}>Learn more about this game</Text>
+          <QRCode value={game.url} />
+        </View>
       </View>
     </ScrollView>
     </View>
@@ -223,14 +243,14 @@ function GameStream({ thumbnail_url, user_name, viewer_count }) {
   const thumbnailUrl = thumbnail_url.substr(0, splitPoint) + '.jpg';
 
   return (
-    <TouchableHighlight onPress={openStream}>
+    <TouchableHighlight onPress={openStream} style={{ marginTop: 30 }}>
       <View>
         <Image
           source={{ uri: thumbnailUrl }}
           style={{ width: 135, height: 100 }}
         />
         <Text style={{ color: colors.text }}>User: {user_name}</Text>
-        <Text style={{ color: colors.text }}>{viewer_count} viewers</Text>
+        <Text style={{ color: colors.secondary }}>{viewer_count} viewers</Text>
       </View>
     </TouchableHighlight>
   )
