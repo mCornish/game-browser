@@ -16,7 +16,7 @@ export default function GameSearch({ games, onSelectGame, onSearch }) {
       >
         <TouchableHighlight onPress={() => inputRef.current.focus()}>
           <Text 
-            style={{ 
+            style={{
               color: colors.text,
               fontWeight: 'bold',
               fontSize: 20
@@ -29,6 +29,7 @@ export default function GameSearch({ games, onSelectGame, onSearch }) {
           placeholder="Fall Guys"
           placeholderTextColor={colors.placeholder}
           style={{
+            width: '100%',
             borderBottomWidth: 1,
             borderColor: colors.primary,
             paddingVertical: 3,
