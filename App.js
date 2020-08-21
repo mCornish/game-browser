@@ -4,6 +4,7 @@ import colors from './lib/colors';
 
 import GameBrowser from './components/GameBrowser';
 
+// TODO: Send initial games as a prop to GameBrowser
 export default function App() {
   return (
     <View style={styles.container}>
