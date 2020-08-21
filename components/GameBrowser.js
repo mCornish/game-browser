@@ -10,17 +10,19 @@ import GameSearch from './GameSearch';
 import GamePage from './GamePage';
 
 export default function GameBrowser({ games: initialGames = [] }) {
+  const fetchedGames = useRef([]);
   const [games, setGames] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [openedGame, setOpenedGame] = useState(null);
 
-  const searchGames = searchFor(initialGames, 'title');
+  const searchGames = searchFor(fetchedGames.current, 'title');
 
   useEffect(() => {
     (async () => {
       try {
-        const fetchedGames = await fetchGameData(initialGames);
-        setGames(fetchedGames);
+        const gamesWithData = await fetchGameData(initialGames);
+        fetchedGames.current = gamesWithData;
+        setGames(gamesWithData);
         setIsLoading(false);
       } catch (err) {
         console.error(err);
